@@ -5,3 +5,4 @@ cache
 dist
 coverage
 fnox.toml
+.codex
