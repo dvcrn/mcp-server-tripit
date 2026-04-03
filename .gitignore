@@ -1,0 +1,7 @@
+node_modules
+bun.lock
+.tmp
+cache
+dist
+coverage
+fnox.toml
