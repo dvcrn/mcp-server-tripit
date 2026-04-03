@@ -1,5 +1,4 @@
 export const ALL_TOOL_NAMES = [
-  "tripit_login",
   "tripit_trips_list",
   "tripit_trips_get",
   "tripit_trips_create",

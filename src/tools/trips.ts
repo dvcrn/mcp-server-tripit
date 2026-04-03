@@ -1,24 +1,9 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as z from "zod/v4";
-import { createAuthenticatedTripItClient, withTripIt } from "../client";
+import { withTripIt } from "../client";
 import { jsonResult } from "../results";
 
 export function registerTripTools(server: McpServer): void {
-  server.registerTool(
-    "tripit_login",
-    {
-      title: "TripIt Login",
-      description: "Authenticate with TripIt and confirm that credentials are valid.",
-    },
-    async () => {
-      const client = await createAuthenticatedTripItClient();
-      return jsonResult({
-        message: "Authenticated successfully. Token cached.",
-        accessTokenAvailable: Boolean(client.getAccessToken()),
-      });
-    },
-  );
-
   server.registerTool(
     "tripit_trips_list",
     {

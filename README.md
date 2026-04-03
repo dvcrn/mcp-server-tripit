@@ -74,7 +74,6 @@ fnox x -- npx -y mcp-server-tripit
 
 Built on top of [`dvcrn/tripit-cli`](https://github.com/dvcrn/tripit-cli), this MCP server exposes the TripIt API for common travel workflows, including:
 
-- authenticating with TripIt
 - listing and fetching trips
 - creating, updating, and deleting trips
 - managing hotel reservations

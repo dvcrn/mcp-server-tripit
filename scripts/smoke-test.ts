@@ -75,11 +75,6 @@ async function main(): Promise<void> {
       }
     }
 
-    const login = await callTool(client, "tripit_login");
-    if (!login.accessTokenAvailable) {
-      throw new Error("Login tool did not authenticate successfully.");
-    }
-
     const trip = await callTool(client, "tripit_trips_create", {
       name: tripName,
       start: startDate,
