@@ -11,6 +11,6 @@ export default defineConfig({
   dts: true,
   outDir: "dist",
   banner: {
-    js: "#!/usr/bin/env bun",
+    js: "#!/usr/bin/env node",
   },
 });
