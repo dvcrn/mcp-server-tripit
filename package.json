@@ -1,6 +1,6 @@
 {
   "name": "mcp-server-tripit",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Expose the TripIt API as an MCP server",
   "type": "module",
   "bin": {
