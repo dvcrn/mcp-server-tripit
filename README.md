@@ -4,6 +4,9 @@
 
 It is built on top of the [`tripit-cli`](https://github.com/dvcrn/tripit-cli) project and uses the published [`tripit`](https://www.npmjs.com/package/tripit) package to access the full TripIt API.
 
+[![Deploy on MCP Nest](https://mcpnest.dev/images/deploy-on-mcpnest.png)](https://mcpnest.dev/deploy?server=
+mcp-server-tripit&package-manager=npx)
+
 ## Install
 
 Run it directly with:
