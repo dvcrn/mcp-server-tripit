@@ -1,3 +1,9 @@
+// Node.js v18 does not expose `File` as a global; polyfill it so bundled packages (e.g. undici inside tripit) can find it.
+import { File as NodeFetchFile } from "node-fetch";
+if (typeof globalThis.File === "undefined") {
+  (globalThis as unknown as Record<string, unknown>).File = NodeFetchFile;
+}
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { registerActivityTools } from "./tools/activities";
