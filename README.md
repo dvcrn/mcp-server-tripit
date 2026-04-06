@@ -6,7 +6,7 @@ It is built on top of the [`tripit-cli`](https://github.com/dvcrn/tripit-cli) pr
 
 Deploy this server directly to [MCP Nest](https://mcpnest.dev)
 
-  <a href="https://mcpnest.dev/deploy?server=mcp-server-tripit&package-manager=npx">
+<a href="https://mcpnest.dev/deploy?server=mcp-server-tripit&package-manager=npx&env[TRIPIT_USERNAME]=&env[TRIPIT_PASSWORD]=">
     <img src="https://mcpnest.dev/images/deploy-on-mcpnest.png" alt="Deploy on MCP Nest" height="32" />
   </a>
 
