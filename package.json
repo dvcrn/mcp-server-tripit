@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.18.1",
+    "node-fetch": "^3.3.2",
     "tripit": "^0.1.6",
     "zod": "^3.25.76"
   },
