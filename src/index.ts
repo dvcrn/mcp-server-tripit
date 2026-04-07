@@ -1,3 +1,7 @@
+// Polyfill must be imported first — ESM hoists all static imports, so any
+// module referencing `globalThis.File` at init time is covered before it runs.
+import "./polyfill.js";
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { registerActivityTools } from "./tools/activities";
