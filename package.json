@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.18.1",
-    "tripit": "^0.1.6",
+    "tripit": "^0.1.7",
     "zod": "^3.25.76"
   },
   "devDependencies": {
