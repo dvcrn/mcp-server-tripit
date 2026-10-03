@@ -106,10 +106,10 @@ This follow-up builds on [John P White (@diverdown1964)'s PR #2](https://github.
 The API, payload merging, field ordering and locking live in
 [tripit-js PR #4](https://github.com/dvcrn/tripit-js/pull/4).
 
-### Unmerged library dependency
+### Library dependency
 
 This PR pins `tripit` to Git commit
-`6f00897303c36cfd3f482dc5af31f8ef77c277ff` from that library PR. Install with Bun
+`6f5dc6d3fd461e0dcf426bd37238feca0c6b9209` from the merged library PR. Install with Bun
 1.3.10 and `bun install --frozen-lockfile`. `tripit` is a trusted dependency so its
 reviewed `prepare` script builds `dist` from the pinned source. The committed
 lockfile records the dependency graph. This requires no package publication;
