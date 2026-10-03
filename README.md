@@ -2,7 +2,7 @@
 
 `mcp-server-tripit` exposes the TripIt API as an MCP server.
 
-It is built on top of the [`tripit-cli`](https://github.com/dvcrn/tripit-cli) project and uses the published [`tripit`](https://www.npmjs.com/package/tripit) package to access the full TripIt API.
+It is built on top of the [`tripit-cli`](https://github.com/dvcrn/tripit-cli) project and uses the [`tripit`](https://www.npmjs.com/package/tripit) package to access the full TripIt API.
 
 Deploy this server directly to [MCP Nest](https://mcpnest.dev)
 
@@ -87,3 +87,19 @@ Built on top of [`dvcrn/tripit-cli`](https://github.com/dvcrn/tripit-cli), this 
 - managing transport segments
 - managing activities
 - attaching and removing documents from supported TripIt objects
+
+## Car rentals and preserving reservation fields
+
+Use `tripit_cars_get`, `tripit_cars_create`, `tripit_cars_update` and
+`tripit_cars_delete`. Generic document tools also accept `type: "car"` and support
+car auto-detection. Hotel updates accept `phone` and `displayName`; car updates
+accept `displayName`.
+
+Hotel/car edits preserve omitted fields, custom names and attachments. Empty
+strings leave existing values unchanged; `null` explicitly clears a field. Trip
+association cannot be cleared. Unknown returned fields cause the library to reject
+an update rather than lose data. The library serializes hotel/car edits and document
+changes within one process. Edits in another process or the TripIt app can still
+race.
+
+Car support builds on [John P White (@diverdown1964)'s PR #2](https://github.com/dvcrn/mcp-server-tripit/pull/2).

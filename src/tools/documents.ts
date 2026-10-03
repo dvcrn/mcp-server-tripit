@@ -4,7 +4,7 @@ import { withTripIt } from "../client";
 import { jsonResult } from "../results";
 import { requireExactlyOneSelector } from "./common";
 
-const objectTypeSchema = z.enum(["lodging", "activity", "air", "transport"]);
+const objectTypeSchema = z.enum(["lodging", "activity", "air", "transport", "car"]);
 
 export function registerDocumentTools(server: McpServer): void {
   server.registerTool(

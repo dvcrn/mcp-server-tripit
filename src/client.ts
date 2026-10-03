@@ -18,6 +18,10 @@ type TripItClient = {
     description?: string;
   }): Promise<unknown>;
   deleteTrip(id: string): Promise<unknown>;
+  getCar(id: string): Promise<unknown>;
+  createCar(params: Record<string, unknown>): Promise<unknown>;
+  updateCar(params: Record<string, unknown>): Promise<unknown>;
+  deleteCar(id: string): Promise<unknown>;
   getHotel(id: string): Promise<unknown>;
   createHotel(params: Record<string, unknown>): Promise<unknown>;
   updateHotel(params: Record<string, unknown>): Promise<unknown>;
