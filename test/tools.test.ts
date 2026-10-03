@@ -99,6 +99,10 @@ test("MCP tools call the pinned library for CRUD, edits and document preservatio
             },
       );
       const id = created[key].uuid;
+      const agency = { agency_name: "Synthetic agency", agency_conf_num: "AGENCY" };
+      objects.get(`${kind === "cars" ? "car" : "lodging"}:${id}`)!.Agency = {
+        ...agency, partner_agency_id: "123",
+      };
       const invalidTrip = await client.callTool({
         name: `tripit_${kind}_update`,
         arguments: { id, trip: null },
@@ -119,6 +123,7 @@ test("MCP tools call the pinned library for CRUD, edits and document preservatio
       let object = (await call(`tripit_${kind}_get`, { id }))[key];
       expect(object.supplier_conf_num).toBe("CONF");
       expect(object.notes).toBe("keep");
+      expect(object.Agency).toEqual(agency);
       expect(object.display_name).toBe("Custom");
       expect(object.EndDateTime.time).toBe("12:15:00");
       expect(object.Image.caption).toBe("first");
@@ -138,6 +143,7 @@ test("MCP tools call the pinned library for CRUD, edits and document preservatio
       await call("tripit_documents_remove", { id, all: true });
       object = (await call(`tripit_${kind}_get`, { id }))[key];
       expect(object.Image).toBeUndefined();
+      expect(object.Agency).toEqual(agency);
       expect(object.display_name).toBe("Custom");
       const invalid = await client.callTool({
         name: "tripit_documents_remove",

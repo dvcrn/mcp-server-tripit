@@ -1,7 +1,7 @@
 # Validation
 
 This draft consumes [tripit-js PR #4](https://github.com/dvcrn/tripit-js/pull/4),
-commit `1a02f7bc6792e0ce82588f907138979ad8e045b9`, and follows
+commit `3980be219abde64b4e0cdef82bc599fb2851063f`, and follows
 [John P White (@diverdown1964)'s PR #2](https://github.com/dvcrn/mcp-server-tripit/pull/2).
 
 Validated with Bun 1.3.10, TypeScript 5.9.3, MCP SDK 1.32.0, Zod 3.25.76 and
@@ -12,13 +12,13 @@ the exact Git dependency without a package publication.
 Checks:
 
 - `bun run check` and `bun run build` pass.
-- `bun test` passes 31 assertions through an in-memory MCP connection using the
+- `bun test` passes 35 assertions through an in-memory MCP connection using the
   actual pinned library. Covers car/hotel CRUD, argument mapping, partial edits,
   custom names, null clearing, unsupported trip clearing, document preservation,
   attachment, selective/last removal, selector validation and deleted-object errors.
 - `bun scripts/discover-tools.ts` launches the built stdio server without
   credentials and discovers all 29 tools.
-- The library's 33 offline regressions cover payload ordering, unknown-field
+- The library's 36 offline regressions cover payload ordering, unknown-field
   rejection, both false representations, numeric-ID/UUID locking and concurrent
   edits/attachments in more detail.
 
