@@ -1,4 +1,4 @@
-type TripItClient = {
+export type TripItClient = {
   authenticate(): Promise<string>;
   getAccessToken(): string;
   listTrips(pageSize?: number, pageNum?: number, past?: boolean): Promise<unknown>;

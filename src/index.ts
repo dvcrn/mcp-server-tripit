@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { registerActivityTools } from "./tools/activities";
+import { registerCarTools } from "./tools/cars";
 import { registerDocumentTools } from "./tools/documents";
 import { registerFlightTools } from "./tools/flights";
 import { registerHotelTools } from "./tools/hotels";
@@ -15,6 +16,7 @@ function createServer(): McpServer {
 
   registerTripTools(server);
   registerHotelTools(server);
+  registerCarTools(server);
   registerFlightTools(server);
   registerTransportTools(server);
   registerActivityTools(server);

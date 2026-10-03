@@ -86,4 +86,5 @@ Built on top of [`dvcrn/tripit-cli`](https://github.com/dvcrn/tripit-cli), this 
 - managing flights
 - managing transport segments
 - managing activities
+- managing car rentals
 - attaching and removing documents from supported TripIt objects

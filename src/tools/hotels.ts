@@ -1,8 +1,11 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as z from "zod/v4";
+import { tripitReplace, withLockedObject } from "../api";
 import { withTripIt } from "../client";
+import { mergeReplace, normalizeTime } from "../payloads";
 import { jsonResult } from "../results";
 import { requireExactlyOneSelector } from "./common";
+import { removeOwn } from "./documents";
 
 export function registerHotelTools(server: McpServer): void {
   server.registerTool(
@@ -74,7 +77,8 @@ export function registerHotelTools(server: McpServer): void {
     "tripit_hotels_update",
     {
       title: "TripIt Hotels Update",
-      description: "Update an existing hotel reservation.",
+      description:
+        "Update an existing hotel reservation. Only the fields passed change; everything else on the reservation is kept.",
       inputSchema: {
         id: z.string().min(1).describe("Hotel ID or UUID."),
         trip: z.string().optional().describe("Trip UUID or Trip ID."),
@@ -93,31 +97,34 @@ export function registerHotelTools(server: McpServer): void {
         rate: z.string().optional().describe("Booking rate."),
         notes: z.string().optional().describe("Notes for the booking."),
         cost: z.string().optional().describe("Total cost."),
+        phone: z.string().optional().describe("Hotel phone number."),
       },
     },
+    // Read, merge, replace (../payloads): the library's updateHotel sends only the fields passed,
+    // and TripIt's replace wipes the rest (confirmation number, phone, address, rate, notes, cost).
     async (args) =>
       jsonResult(
-        (await withTripIt((client) =>
-          client.updateHotel({
-            id: args.id,
-            tripId: args.trip,
-            hotelName: args.name,
-            checkInDate: args.checkin,
-            checkInTime: args.checkinTime,
-            checkOutDate: args.checkout,
-            checkOutTime: args.checkoutTime,
-            timezone: args.timezone,
-            street: args.address,
-            city: args.city,
-            country: args.country,
-            state: args.state,
-            zip: args.zip,
-            supplierConfNum: args.confirmation,
-            bookingRate: args.rate,
+        await withTripIt((client) => withLockedObject(client, "lodging", "LodgingObject", args.id, async (existing) => {
+          if (!existing.supplier_name && existing.display_name) existing.supplier_name = existing.display_name;
+          const changes: Record<string, unknown> = {
+            supplier_name: args.name,
+            supplier_conf_num: args.confirmation,
+            supplier_phone: args.phone,
+            booking_rate: args.rate,
             notes: args.notes,
-            totalCost: args.cost,
-          }),
-        )) as Record<string, unknown>,
+            total_cost: args.cost,
+            StartDateTime: { date: args.checkin, time: normalizeTime(args.checkinTime), timezone: args.timezone },
+            EndDateTime: { date: args.checkout, time: normalizeTime(args.checkoutTime), timezone: args.timezone },
+            Address: { address: args.address, city: args.city, state: args.state, zip: args.zip, country: args.country },
+          };
+          if (args.trip) {
+            const key = args.trip.includes("-") ? "trip_uuid" : "trip_id";
+            changes[key] = args.trip;
+            changes[key === "trip_uuid" ? "trip_id" : "trip_uuid"] = null;
+          }
+          const payload = mergeReplace("lodging", existing, changes);
+          return tripitReplace(client, "lodging", String(existing.uuid), "LodgingObject", payload);
+        })),
       ),
   );
 
@@ -187,18 +194,11 @@ export function registerHotelTools(server: McpServer): void {
         "Provide exactly one selector: uuid, imageUuid, url, caption, index, or all.",
       );
 
+      // Read, filter, replace (./documents): the library's removal wipes the hotel's other fields.
       return jsonResult(
-        (await withTripIt((client) =>
-          client.removeDocument({
-            objectType: "lodging",
-            objectId: id,
-            imageUuid: resolvedUuid,
-            imageUrl: url,
-            caption,
-            index,
-            removeAll: all,
-          }),
-        )) as Record<string, unknown>,
+        await withTripIt((client) =>
+          removeOwn(client, "lodging", id, { uuid: resolvedUuid, url, caption, index, all }),
+        ),
       );
     },
   );
