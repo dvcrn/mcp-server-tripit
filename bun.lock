@@ -6,7 +6,7 @@
       "name": "mcp-server-tripit",
       "dependencies": {
         "@modelcontextprotocol/sdk": "^1.18.1",
-        "tripit": "github:dvcrn/tripit-js#1be9ba2ef2beeb2c3d337795031e32a15d1d1422",
+        "tripit": "github:dvcrn/tripit-js#86b80acfd574e5f2bc6a7537de285a48daef288c",
         "zod": "^3.25.76",
       },
       "devDependencies": {
@@ -431,7 +431,7 @@
 
     "tree-kill": ["tree-kill@1.2.2", "", { "bin": { "tree-kill": "cli.js" } }, "sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A=="],
 
-    "tripit": ["tripit@github:dvcrn/tripit-js#1be9ba2", { "dependencies": { "cheerio": "^1.2.0", "commander": "^14.0.3", "fetch-cookie": "^3.2.0", "node-fetch": "^3.3.2", "tough-cookie": "^6.0.0" }, "peerDependencies": { "typescript": "^5.9.3" }, "bin": { "tripit": "dist/tripit.js" } }, "dvcrn-tripit-js-1be9ba2", "sha512-VSVhoREfH7xs1DVSSn2GGCTbHmd++nfuG1WODv2HDHIGi39mS3NpuGPdmM5+t5twcpC/AQCkyAm+pb2qh34xmA=="],
+    "tripit": ["tripit@github:dvcrn/tripit-js#86b80ac", { "dependencies": { "cheerio": "^1.2.0", "commander": "^14.0.3", "fetch-cookie": "^3.2.0", "node-fetch": "^3.3.2", "tough-cookie": "^6.0.0" }, "peerDependencies": { "typescript": "^5.9.3" }, "bin": { "tripit": "dist/tripit.js" } }, "dvcrn-tripit-js-86b80ac", "sha512-uql3+ZLd6AjI9DHmMlxZ5xcWLMJXeltLi5naM27grdbPeBadjN8pbRoiTnoE+TSnIEew4C/lfbti7OTX586d3Q=="],
 
     "ts-interface-checker": ["ts-interface-checker@0.1.13", "", {}, "sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA=="],
 

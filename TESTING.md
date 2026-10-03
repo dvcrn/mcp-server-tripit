@@ -1,7 +1,7 @@
 # Validation
 
 This draft consumes [tripit-js PR #4](https://github.com/dvcrn/tripit-js/pull/4),
-commit `1be9ba2ef2beeb2c3d337795031e32a15d1d1422`, and follows
+commit `86b80acfd574e5f2bc6a7537de285a48daef288c`, and follows
 [John P White (@diverdown1964)'s PR #2](https://github.com/dvcrn/mcp-server-tripit/pull/2).
 
 Validated with Bun 1.3.10, TypeScript 5.9.3, MCP SDK 1.32.0, Zod 3.25.76 and
@@ -18,7 +18,7 @@ Checks:
   attachment, selective/last removal, selector validation and deleted-object errors.
 - `bun scripts/discover-tools.ts` launches the built stdio server without
   credentials and discovers all 29 tools.
-- The library's 26 offline regressions cover payload ordering, unknown-field
+- The library's 28 offline regressions cover payload ordering, unknown-field
   rejection, both false representations, numeric-ID/UUID locking and concurrent
   edits/attachments in more detail.
 
