@@ -109,12 +109,13 @@ The API, payload merging, field ordering and locking live in
 ### Unmerged library dependency
 
 This PR pins `tripit` to Git commit
-`45dc2de0327ee65cab2263a246929766e6b379b3` from that library PR. Install with Bun
+`6f00897303c36cfd3f482dc5af31f8ef77c277ff` from that library PR. Install with Bun
 1.3.10 and `bun install --frozen-lockfile`. `tripit` is a trusted dependency so its
 reviewed `prepare` script builds `dist` from the pinned source. The committed
 lockfile records the dependency graph. This requires no package publication;
-replace the Git pin with a released version only after library merge and a
-separately authorized release.
+replace the Git pin when the library changes are available in a release.
+
+### Development checks
 
 ```sh
 bun install --frozen-lockfile
@@ -124,12 +125,17 @@ bun test
 bun scripts/discover-tools.ts
 ```
 
-`bun test` runs the MCP tools through an in-memory protocol connection and the
-actual pinned library, mocking only authentication/API transport. Discovery uses
-the built stdio server without credentials. The opt-in
-`scripts/reservation-integration.ts` tests the built stdio server against the dev
-account, checks its identity, and verifies deletion of every synthetic object.
-Supply configured credentials, `TRIPIT_LIVE_TEST=1` and `TRIPIT_DEV_IDENTITY`
-(the confirmed dev profile email, screen name or UUID), and launch with a fresh
-`HOME` to isolate the token cache. The older `smoke` command does not cover these
-regressions and does not verify cleanup as strictly.
+Protocol tests exercise the pinned library with mocked API transport; discovery
+checks the built stdio server without credentials.
+
+Live tests require configured credentials and `TRIPIT_DEV_IDENTITY` set to the
+confirmed dev profile email, screen name or UUID. Use a fresh token cache:
+
+```sh
+tripit_test_home=$(mktemp -d)
+fnox x -- env HOME="$tripit_test_home" TRIPIT_LIVE_TEST=1 bun scripts/reservation-integration.ts
+```
+
+The harness verifies identity, exercises synthetic reservations through MCP, and
+checks their deletion. Assertion or cleanup failures fail the run. Remove the
+temporary HOME afterward; never commit credentials, token caches, or raw responses.

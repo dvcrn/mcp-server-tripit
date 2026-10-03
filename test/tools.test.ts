@@ -85,6 +85,8 @@ test("MCP tools call the pinned library for CRUD, edits and document preservatio
               pickupDate: "2030-01-01",
               dropoffDate: "2030-01-02",
               pickupTime: "9:05",
+              pickupTimezone: "Europe/London",
+              dropoffTimezone: "Europe/Paris",
               timezone: "Etc/UTC",
               notes: "keep",
               cost: "100 USD",
@@ -106,6 +108,16 @@ test("MCP tools call the pinned library for CRUD, edits and document preservatio
               cost: "100 USD",
             },
       );
+
+      expect(created[key].supplier_name).toBe(
+        kind === "cars" ? "Synthetic Rentals" : "Synthetic Hotel",
+      );
+      expect(created[key].StartDateTime.date).toBe("2030-01-01");
+      expect(created[key].EndDateTime.date).toBe("2030-01-02");
+      if (kind === "cars") {
+        expect(created[key].StartDateTime.timezone).toBe("Europe/London");
+        expect(created[key].EndDateTime.timezone).toBe("Europe/Paris");
+      }
 
       const id = created[key].uuid;
       const agency = { agency_name: "Synthetic agency", agency_conf_num: "AGENCY" };
@@ -140,6 +152,9 @@ test("MCP tools call the pinned library for CRUD, edits and document preservatio
       expect(object.Agency).toEqual(agency);
       expect(object.display_name).toBe("Custom");
       expect(object.EndDateTime.time).toBe("12:15:00");
+      if (kind === "hotels") {
+        expect(object.supplier_phone).toBe("+1 202 555 0100");
+      }
       expect(object.Image.caption).toBe("first");
 
       await call(`tripit_${kind}_update`, { id, notes: null });

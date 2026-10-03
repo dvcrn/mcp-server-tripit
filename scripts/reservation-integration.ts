@@ -254,6 +254,9 @@ try {
       })
     ).CarObject;
     created.push({ kind: "car", id: car.uuid });
+    assert.equal(car.supplier_name, "Synthetic Rentals");
+    assert.equal(car.StartDateTime?.date, "2030-05-20");
+    assert.equal(car.EndDateTime?.date, "2030-05-23");
 
     const hotel = (
       await client.createHotel({
