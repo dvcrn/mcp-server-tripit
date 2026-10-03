@@ -108,8 +108,8 @@ The API, payload merging, field ordering and locking live in
 
 ### Unmerged library dependency
 
-This draft pins `tripit` to Git commit
-`3980be219abde64b4e0cdef82bc599fb2851063f` from that library PR. Install with Bun
+This PR pins `tripit` to Git commit
+`45dc2de0327ee65cab2263a246929766e6b379b3` from that library PR. Install with Bun
 1.3.10 and `bun install --frozen-lockfile`. `tripit` is a trusted dependency so its
 reviewed `prepare` script builds `dist` from the pinned source. The committed
 lockfile records the dependency graph. This requires no package publication;

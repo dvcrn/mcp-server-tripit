@@ -1,7 +1,7 @@
 # Validation
 
-This draft consumes [tripit-js PR #4](https://github.com/dvcrn/tripit-js/pull/4),
-commit `3980be219abde64b4e0cdef82bc599fb2851063f`, and follows
+This PR consumes [tripit-js PR #4](https://github.com/dvcrn/tripit-js/pull/4),
+commit `45dc2de0327ee65cab2263a246929766e6b379b3`, and follows
 [John P White (@diverdown1964)'s PR #2](https://github.com/dvcrn/mcp-server-tripit/pull/2).
 
 Validated with Bun 1.3.10, TypeScript 5.9.3, MCP SDK 1.32.0, Zod 3.25.76 and

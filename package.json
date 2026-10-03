@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.18.1",
-    "tripit": "github:dvcrn/tripit-js#3980be219abde64b4e0cdef82bc599fb2851063f",
+    "tripit": "github:dvcrn/tripit-js#45dc2de0327ee65cab2263a246929766e6b379b3",
     "zod": "^3.25.76"
   },
   "devDependencies": {
