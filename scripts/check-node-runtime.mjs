@@ -34,6 +34,9 @@ try {
   ]);
   console.log(`PASS: Node ${process.version} initializes MCP and loads TripIt.`);
 } finally {
-  await client.close();
-  await rm(isolatedHome, { recursive: true, force: true });
+  try {
+    await client.close();
+  } finally {
+    await rm(isolatedHome, { recursive: true, force: true });
+  }
 }
