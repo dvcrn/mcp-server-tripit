@@ -38,94 +38,99 @@ const transport = new StdioClientTransport({
   env,
   stderr: "pipe",
 });
-await protocol.connect(transport);
-const listed = await protocol.listTools();
-assert.deepEqual(
-  listed.tools.map((t) => t.name).sort(),
-  [...ALL_TOOL_NAMES].sort(),
-);
-console.log(`PASS built stdio MCP handshake and ${listed.tools.length} tools`);
-async function call(name: string, args: Record<string, unknown>): Promise<any> {
-  const result = await protocol.callTool({
-    name: `tripit_${name}`,
-    arguments: Object.fromEntries(
-      Object.entries(args).filter(([, v]) => v !== undefined),
-    ),
-  });
-  if (result.isError) {
-    const content = result.content as Array<{ text?: string }>;
-    throw new Error(content.map((c) => c.text ?? "").join("\n"));
-  }
-  return result.structuredContent;
-}
-const carParams = (p: Record<string, unknown>) =>
-  Object.fromEntries(
-    Object.entries(p).map(([k, v]) => [
-      {
-        uuid: "id",
-        tripId: "trip",
-        supplierName: "supplier",
-        supplierConfNum: "confirmation",
-        totalCost: "cost",
-      }[k] ?? k,
-      v,
-    ]),
-  );
-const hotelParams = (p: Record<string, unknown>) =>
-  Object.fromEntries(
-    Object.entries(p).map(([k, v]) => [
-      {
-        uuid: "id",
-        tripId: "trip",
-        hotelName: "name",
-        supplierConfNum: "confirmation",
-        totalCost: "cost",
-        bookingRate: "rate",
-        checkInDate: "checkin",
-        checkInTime: "checkinTime",
-        checkOutDate: "checkout",
-        checkOutTime: "checkoutTime",
-        street: "address",
-      }[k] ?? k,
-      v,
-    ]),
-  );
-const client = {
-  listTrips: (pageSize: number, pageNum: number) =>
-    call("trips_list", { pageSize, pageNum }),
-  createTrip: (p: any) =>
-    call("trips_create", {
-      name: p.displayName,
-      start: p.startDate,
-      end: p.endDate,
-      location: p.primaryLocation,
-    }),
-  deleteTrip: (id: string) => call("trips_delete", { id }),
-  getTrip: (id: string) => call("trips_get", { id }),
-  createCar: (p: any) => call("cars_create", carParams(p)),
-  getCar: (id: string) => call("cars_get", { id }),
-  updateCar: (p: any) => call("cars_update", carParams(p)),
-  deleteCar: (id: string) => call("cars_delete", { id }),
-  createHotel: (p: any) => call("hotels_create", hotelParams(p)),
-  getHotel: (id: string) => call("hotels_get", { id }),
-  updateHotel: (p: any) => call("hotels_update", hotelParams(p)),
-  deleteHotel: (id: string) => call("hotels_delete", { id }),
-  attachDocument: (p: any) =>
-    call("documents_attach", {
-      id: p.objectId,
-      type: p.objectType,
-      file: p.filePath,
-      caption: p.caption,
-    }),
-  removeDocument: (p: any) =>
-    call("documents_remove", {
-      id: p.objectId,
-      type: p.objectType,
-      caption: p.caption,
-      all: p.removeAll,
-    }),
-};
 try {
+  await protocol.connect(transport);
+  const listed = await protocol.listTools();
+  assert.deepEqual(
+    listed.tools.map((t) => t.name).sort(),
+    [...ALL_TOOL_NAMES].sort(),
+  );
+  console.log(
+    `PASS built stdio MCP handshake and ${listed.tools.length} tools`,
+  );
+  async function call(
+    name: string,
+    args: Record<string, unknown>,
+  ): Promise<any> {
+    const result = await protocol.callTool({
+      name: `tripit_${name}`,
+      arguments: Object.fromEntries(
+        Object.entries(args).filter(([, v]) => v !== undefined),
+      ),
+    });
+    if (result.isError) {
+      const content = result.content as Array<{ text?: string }>;
+      throw new Error(content.map((c) => c.text ?? "").join("\n"));
+    }
+    return result.structuredContent;
+  }
+  const carParams = (p: Record<string, unknown>) =>
+    Object.fromEntries(
+      Object.entries(p).map(([k, v]) => [
+        {
+          uuid: "id",
+          tripId: "trip",
+          supplierName: "supplier",
+          supplierConfNum: "confirmation",
+          totalCost: "cost",
+        }[k] ?? k,
+        v,
+      ]),
+    );
+  const hotelParams = (p: Record<string, unknown>) =>
+    Object.fromEntries(
+      Object.entries(p).map(([k, v]) => [
+        {
+          uuid: "id",
+          tripId: "trip",
+          hotelName: "name",
+          supplierConfNum: "confirmation",
+          totalCost: "cost",
+          bookingRate: "rate",
+          checkInDate: "checkin",
+          checkInTime: "checkinTime",
+          checkOutDate: "checkout",
+          checkOutTime: "checkoutTime",
+          street: "address",
+        }[k] ?? k,
+        v,
+      ]),
+    );
+  const client = {
+    listTrips: (pageSize: number, pageNum: number) =>
+      call("trips_list", { pageSize, pageNum }),
+    createTrip: (p: any) =>
+      call("trips_create", {
+        name: p.displayName,
+        start: p.startDate,
+        end: p.endDate,
+        location: p.primaryLocation,
+      }),
+    deleteTrip: (id: string) => call("trips_delete", { id }),
+    getTrip: (id: string) => call("trips_get", { id }),
+    createCar: (p: any) => call("cars_create", carParams(p)),
+    getCar: (id: string) => call("cars_get", { id }),
+    updateCar: (p: any) => call("cars_update", carParams(p)),
+    deleteCar: (id: string) => call("cars_delete", { id }),
+    createHotel: (p: any) => call("hotels_create", hotelParams(p)),
+    getHotel: (id: string) => call("hotels_get", { id }),
+    updateHotel: (p: any) => call("hotels_update", hotelParams(p)),
+    deleteHotel: (id: string) => call("hotels_delete", { id }),
+    attachDocument: (p: any) =>
+      call("documents_attach", {
+        id: p.objectId,
+        type: p.objectType,
+        file: p.filePath,
+        caption: p.caption,
+      }),
+    removeDocument: (p: any) =>
+      call("documents_remove", {
+        id: p.objectId,
+        type: p.objectType,
+        caption: p.caption,
+        all: p.removeAll,
+      }),
+  };
   const profile = (await client.listTrips(1, 1)).Profile;
   function matches(value: unknown): boolean {
     return typeof value === "string"
@@ -260,6 +265,13 @@ try {
       phone: "+1 202 555 0100",
       displayName: "Custom synthetic hotel",
     });
+    const updatedHotel = (await client.getHotel(hotel.uuid)).LodgingObject;
+    assert.equal(updatedHotel.supplier_phone, "+1 202 555 0100");
+    assert.equal(updatedHotel.display_name, "Custom synthetic hotel");
+    assert.equal(
+      (await client.getCar(car.uuid)).CarObject.display_name,
+      "Custom synthetic car",
+    );
     for (const { kind, id } of created) {
       console.log(`RUN ${kind} attachment and edits`);
       const get = async () =>
@@ -288,7 +300,7 @@ try {
       assert.deepEqual(stable(after), stable(expected));
       await Promise.all([
         update({ notes: "edited" }),
-        update({ supplierConfNum: "SYN-EDIT" }),
+        update({ uuid: id.toUpperCase(), supplierConfNum: "SYN-EDIT" }),
       ]);
       assert.equal((await get()).notes, "edited");
       assert.equal((await get()).supplier_conf_num, "SYN-EDIT");
