@@ -9,11 +9,13 @@ import { ALL_TOOL_NAMES } from "../src/types";
 // Run only with a fresh HOME and an explicitly confirmed dev-account identity.
 if (process.env.TRIPIT_LIVE_TEST !== "1")
   throw new Error("Set TRIPIT_LIVE_TEST=1 for mutating dev-account tests");
+
 const expected = process.env.TRIPIT_DEV_IDENTITY?.toLowerCase();
 if (!expected)
   throw new Error(
     "TRIPIT_DEV_IDENTITY must identify the authorized dev profile",
   );
+
 const protocol = new Client({ name: "reservation-integration", version: "1" });
 const env: Record<string, string> = {
   HOME: process.env.HOME!,
@@ -32,12 +34,14 @@ for (const name of [
 }
 if (process.env.TRIPIT_CLIENT_ID)
   env.TRIPIT_CLIENT_ID = process.env.TRIPIT_CLIENT_ID;
+
 const transport = new StdioClientTransport({
   command: process.execPath,
   args: ["run", "dist/index.js"],
   env,
   stderr: "pipe",
 });
+
 try {
   await protocol.connect(transport);
   const listed = await protocol.listTools();
@@ -48,6 +52,7 @@ try {
   console.log(
     `PASS built stdio MCP handshake and ${listed.tools.length} tools`,
   );
+
   async function call(
     name: string,
     args: Record<string, unknown>,
@@ -64,38 +69,37 @@ try {
     }
     return result.structuredContent;
   }
-  const carParams = (p: Record<string, unknown>) =>
-    Object.fromEntries(
-      Object.entries(p).map(([k, v]) => [
-        {
-          uuid: "id",
-          tripId: "trip",
-          supplierName: "supplier",
-          supplierConfNum: "confirmation",
-          totalCost: "cost",
-        }[k] ?? k,
-        v,
-      ]),
+
+  function renameParams(
+    params: Record<string, unknown>,
+    names: Record<string, string>,
+  ) {
+    return Object.fromEntries(
+      Object.entries(params).map(([key, value]) => [names[key] ?? key, value]),
     );
-  const hotelParams = (p: Record<string, unknown>) =>
-    Object.fromEntries(
-      Object.entries(p).map(([k, v]) => [
-        {
-          uuid: "id",
-          tripId: "trip",
-          hotelName: "name",
-          supplierConfNum: "confirmation",
-          totalCost: "cost",
-          bookingRate: "rate",
-          checkInDate: "checkin",
-          checkInTime: "checkinTime",
-          checkOutDate: "checkout",
-          checkOutTime: "checkoutTime",
-          street: "address",
-        }[k] ?? k,
-        v,
-      ]),
-    );
+  }
+
+  const carParamNames = {
+    uuid: "id",
+    tripId: "trip",
+    supplierName: "supplier",
+    supplierConfNum: "confirmation",
+    totalCost: "cost",
+  };
+  const hotelParamNames = {
+    uuid: "id",
+    tripId: "trip",
+    hotelName: "name",
+    supplierConfNum: "confirmation",
+    totalCost: "cost",
+    bookingRate: "rate",
+    checkInDate: "checkin",
+    checkInTime: "checkinTime",
+    checkOutDate: "checkout",
+    checkOutTime: "checkoutTime",
+    street: "address",
+  };
+
   const client = {
     listTrips: (pageSize: number, pageNum: number) =>
       call("trips_list", { pageSize, pageNum }),
@@ -108,13 +112,15 @@ try {
       }),
     deleteTrip: (id: string) => call("trips_delete", { id }),
     getTrip: (id: string) => call("trips_get", { id }),
-    createCar: (p: any) => call("cars_create", carParams(p)),
+    createCar: (p: any) => call("cars_create", renameParams(p, carParamNames)),
     getCar: (id: string) => call("cars_get", { id }),
-    updateCar: (p: any) => call("cars_update", carParams(p)),
+    updateCar: (p: any) => call("cars_update", renameParams(p, carParamNames)),
     deleteCar: (id: string) => call("cars_delete", { id }),
-    createHotel: (p: any) => call("hotels_create", hotelParams(p)),
+    createHotel: (p: any) =>
+      call("hotels_create", renameParams(p, hotelParamNames)),
     getHotel: (id: string) => call("hotels_get", { id }),
-    updateHotel: (p: any) => call("hotels_update", hotelParams(p)),
+    updateHotel: (p: any) =>
+      call("hotels_update", renameParams(p, hotelParamNames)),
     deleteHotel: (id: string) => call("hotels_delete", { id }),
     attachDocument: (p: any) =>
       call("documents_attach", {
@@ -131,19 +137,21 @@ try {
         all: p.removeAll,
       }),
   };
+
   const profile = (await client.listTrips(1, 1)).Profile;
+
   function matches(value: unknown): boolean {
-    return typeof value === "string"
-      ? value.toLowerCase() === expected
-      : !!value &&
-          typeof value === "object" &&
-          Object.values(value).some(matches);
+    if (typeof value === "string") return value.toLowerCase() === expected;
+    if (!value || typeof value !== "object") return false;
+    return Object.values(value).some(matches);
   }
+
   assert(
     matches(profile),
     "Authenticated profile does not match the authorized dev identity",
   );
   console.log("PASS authenticated dev-account identity");
+
   const temp = await mkdtemp(join(tmpdir(), "tripit-fixtures-"));
   const filePath = join(temp, "synthetic.pdf");
   const objects = [
@@ -164,11 +172,16 @@ try {
     .map((o) => `${String(o).padStart(10, "0")} 00000 n \n`)
     .join("")}trailer\n<< /Size 5 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
   await writeFile(filePath, pdf);
+
   let tripId: string | undefined;
   const created: Array<{ kind: "car" | "lodging"; id: string }> = [];
   const failures: unknown[] = [];
-  const images = (o: any) =>
-    o.Image ? (Array.isArray(o.Image) ? o.Image : [o.Image]) : [];
+
+  function images(object: any) {
+    if (!object.Image) return [];
+    return Array.isArray(object.Image) ? object.Image : [object.Image];
+  }
+
   const stable = (o: any) =>
     Object.fromEntries(
       Object.entries(o).filter(
@@ -181,6 +194,7 @@ try {
           ].includes(k),
       ),
     );
+
   async function absent(get: () => Promise<unknown>) {
     try {
       await get();
@@ -197,6 +211,7 @@ try {
     }
     throw new Error("Deleted object is still fetchable");
   }
+
   try {
     tripId = (
       await client.createTrip({
@@ -208,6 +223,7 @@ try {
     ).Trip.uuid;
     assert(tripId);
     console.log("PASS dedicated trip create");
+
     const car = (
       await client.createCar({
         tripId,
@@ -238,6 +254,7 @@ try {
       })
     ).CarObject;
     created.push({ kind: "car", id: car.uuid });
+
     const hotel = (
       await client.createHotel({
         tripId,
@@ -259,6 +276,7 @@ try {
       })
     ).LodgingObject;
     created.push({ kind: "lodging", id: hotel.uuid });
+
     console.log("RUN hotel phone and custom-name edit");
     await client.updateHotel({
       uuid: hotel.uuid,
@@ -272,6 +290,7 @@ try {
       (await client.getCar(car.uuid)).CarObject.display_name,
       "Custom synthetic car",
     );
+
     for (const { kind, id } of created) {
       console.log(`RUN ${kind} attachment and edits`);
       const get = async () =>
@@ -282,6 +301,7 @@ try {
         kind === "car"
           ? client.updateCar({ uuid: id, ...p })
           : client.updateHotel({ uuid: id, ...p });
+
       await client.attachDocument({
         objectType: kind,
         objectId: id,
@@ -291,6 +311,7 @@ try {
       console.log(`PASS ${kind} first attachment`);
       const before = await get();
       assert.equal(images(before).length, 1);
+
       await update(
         kind === "car" ? { dropoffTime: "12:15" } : { checkOutTime: "12:15" },
       );
@@ -298,22 +319,27 @@ try {
       const expected = structuredClone(before);
       expected.EndDateTime!.time = "12:15:00";
       assert.deepEqual(stable(after), stable(expected));
+
       await Promise.all([
         update({ notes: "edited" }),
         update({ uuid: id.toUpperCase(), supplierConfNum: "SYN-EDIT" }),
       ]);
       assert.equal((await get()).notes, "edited");
       assert.equal((await get()).supplier_conf_num, "SYN-EDIT");
+
       await update({ notes: "" });
       assert.equal((await get()).notes, "edited");
+
       await update({ notes: null });
       assert(!(await get()).notes);
+
       await client.attachDocument({
         objectId: id,
         filePath,
         caption: "second synthetic document",
       });
       assert.equal(images(await get()).length, 2);
+
       const beforeRemove = await get();
       await client.removeDocument({
         objectId: id,
@@ -325,6 +351,7 @@ try {
         { ...stable(afterRemove), Image: undefined },
         { ...stable(beforeRemove), Image: undefined },
       );
+
       await client.removeDocument({
         objectType: kind,
         objectId: id,
@@ -356,6 +383,7 @@ try {
         console.error(`Cleanup failed for synthetic ${kind} ${id}`);
       }
     }
+
     if (tripId)
       try {
         await client.deleteTrip(tripId);
@@ -365,8 +393,10 @@ try {
         failures.push(e);
         console.error(`Cleanup failed for synthetic trip ${tripId}`);
       }
+
     await rm(temp, { recursive: true, force: true });
   }
+
   if (failures.length)
     throw new AggregateError(
       failures,

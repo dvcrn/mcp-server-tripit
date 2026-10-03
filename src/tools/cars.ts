@@ -84,14 +84,12 @@ export function registerCarTools(server: McpServer): void {
       inputSchema: { id: z.string().min(1) },
       annotations: { readOnlyHint: true, idempotentHint: true },
     },
-    async ({ id }) =>
-      jsonResult(
-        (await withTripIt((client) => client.getCar(id))) as Record<
-          string,
-          unknown
-        >,
-      ),
+    async ({ id }) => {
+      const result = await withTripIt((client) => client.getCar(id));
+      return jsonResult(result as Record<string, unknown>);
+    },
   );
+
   server.registerTool(
     "tripit_cars_create",
     {
@@ -127,13 +125,14 @@ export function registerCarTools(server: McpServer): void {
         notes: carFields.notes.optional(),
       },
     },
-    async (args) =>
-      jsonResult(
-        (await withTripIt((client) =>
-          client.createCar(carParams(args)),
-        )) as Record<string, unknown>,
-      ),
+    async (args) => {
+      const result = await withTripIt((client) =>
+        client.createCar(carParams(args)),
+      );
+      return jsonResult(result as Record<string, unknown>);
+    },
   );
+
   server.registerTool(
     "tripit_cars_update",
     {
@@ -173,13 +172,14 @@ export function registerCarTools(server: McpServer): void {
         notes: carFields.notes.nullable().optional(),
       },
     },
-    async ({ id, ...args }) =>
-      jsonResult(
-        (await withTripIt((client) =>
-          client.updateCar({ id, ...carParams(args) }),
-        )) as Record<string, unknown>,
-      ),
+    async ({ id, ...args }) => {
+      const result = await withTripIt((client) =>
+        client.updateCar({ id, ...carParams(args) }),
+      );
+      return jsonResult(result as Record<string, unknown>);
+    },
   );
+
   server.registerTool(
     "tripit_cars_delete",
     {
@@ -188,12 +188,9 @@ export function registerCarTools(server: McpServer): void {
       inputSchema: { id: z.string().min(1) },
       annotations: { destructiveHint: true },
     },
-    async ({ id }) =>
-      jsonResult(
-        (await withTripIt((client) => client.deleteCar(id))) as Record<
-          string,
-          unknown
-        >,
-      ),
+    async ({ id }) => {
+      const result = await withTripIt((client) => client.deleteCar(id));
+      return jsonResult(result as Record<string, unknown>);
+    },
   );
 }
