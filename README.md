@@ -87,3 +87,49 @@ Built on top of [`dvcrn/tripit-cli`](https://github.com/dvcrn/tripit-cli), this 
 - managing transport segments
 - managing activities
 - attaching and removing documents from supported TripIt objects
+
+## Car rentals and preserving reservation fields
+
+Adds `tripit_cars_get`, `tripit_cars_create`, `tripit_cars_update` and
+`tripit_cars_delete`. Generic document tools also accept `type: "car"` and support
+car auto-detection. Hotel updates accept `phone` and `displayName`; car updates
+accept `displayName`.
+
+Hotel/car edits preserve omitted fields, custom names and attachments. Empty
+strings leave existing values unchanged; `null` explicitly clears a field. Trip
+association cannot be cleared. Unknown returned fields cause the library to reject
+an update rather than lose data. The library serializes hotel/car edits and document
+changes within one process. Edits in another process or the TripIt app can still
+race. Activity, flight and transport update behavior is unchanged.
+
+This follow-up builds on [John P White (@diverdown1964)'s PR #2](https://github.com/dvcrn/mcp-server-tripit/pull/2).
+The API, payload merging, field ordering and locking live in
+[tripit-js PR #4](https://github.com/dvcrn/tripit-js/pull/4).
+
+### Unmerged library dependency
+
+This draft pins `tripit` to Git commit
+`1be9ba2ef2beeb2c3d337795031e32a15d1d1422` from that library PR. Install with Bun
+1.3.10 and `bun install --frozen-lockfile`. `tripit` is a trusted dependency so its
+reviewed `prepare` script builds `dist` from the pinned source. The committed
+lockfile records the dependency graph. This requires no package publication;
+replace the Git pin with a released version only after library merge and a
+separately authorized release.
+
+```sh
+bun install --frozen-lockfile
+bun run check
+bun run build
+bun test
+bun scripts/discover-tools.ts
+```
+
+`bun test` runs the MCP tools through an in-memory protocol connection and the
+actual pinned library, mocking only authentication/API transport. Discovery uses
+the built stdio server without credentials. The opt-in
+`scripts/reservation-integration.ts` tests the built stdio server against the dev
+account, checks its identity, and verifies deletion of every synthetic object.
+Supply configured credentials, `TRIPIT_LIVE_TEST=1` and `TRIPIT_DEV_IDENTITY`
+(the confirmed dev profile email, screen name or UUID), and launch with a fresh
+`HOME` to isolate the token cache. The older `smoke` command does not cover these
+regressions and does not verify cleanup as strictly.
