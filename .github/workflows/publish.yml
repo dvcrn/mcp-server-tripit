@@ -1,0 +1,48 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v[0-9]*.[0-9]*.[0-9]*"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.10
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+
+      - name: Verify tag matches package version
+        run: |
+          if ! [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Tag must be a stable semantic version such as v1.2.3"
+            exit 1
+          fi
+
+          package_version="$(node --print "require('./package.json').version")"
+
+          if [[ "$GITHUB_REF_NAME" != "v$package_version" ]]; then
+            echo "Tag $GITHUB_REF_NAME does not match package.json version $package_version"
+            exit 1
+          fi
+
+      - run: bun install --frozen-lockfile
+      - run: bun run check
+      - run: bun run build
+      - run: bun test
+      - run: bun scripts/discover-tools.ts
+      - run: npm publish

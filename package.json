@@ -2,6 +2,11 @@
   "name": "mcp-server-tripit",
   "version": "0.2.4",
   "description": "Expose the TripIt API as an MCP server",
+  "license": "AGPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dvcrn/mcp-server-tripit.git"
+  },
   "type": "module",
   "bin": {
     "mcp-server-tripit": "./dist/index.js"
