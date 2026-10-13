@@ -1,6 +1,6 @@
 {
   "name": "mcp-server-tripit",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Expose the TripIt API as an MCP server",
   "license": "AGPL-3.0-only",
   "repository": {
